@@ -11,12 +11,24 @@ func sum_invalid_ids(low int, high int) int {
 	total := 0
 	for low <= high {
 		id := strconv.Itoa(low)
-		if len(id)%2 != 0 {
-			low++
-			continue
-		}
-		if id[0:len(id)/2] == id[len(id)/2:] {
-			total += low
+		for i := 1; i <= len(id)/2; i++ {
+			if len(id)%i != 0 {
+				continue
+			}
+			sequence := id[0:i]
+			valid := false
+			for j := 1; j*i <= len(id); j++ {
+				if id[(j-1)*i:j*i] != sequence {
+					break
+				}
+				if j*i == len(id) {
+					total += low
+					valid = true
+				}
+			}
+			if valid == true {
+				break
+			}
 		}
 		low++
 	}
@@ -46,13 +58,15 @@ func parse_id(id string) (int, int) {
 func main() {
 	reader := bufio.NewReader(os.Stdin)
 	total := 0
-	eof_erros := 0
-	for {
+	eof_errors := 0
+	for eof_errors == 0 {
 		id, err := reader.ReadString(',')
-		if err != nil && (err.Error() != "EOF" || eof_erros != 0) {
-			break
-		} else if err != nil && err.Error() == "EOF" {
-			eof_erros++
+		if err != nil {
+			if err.Error() == "EOF" {
+				eof_errors++
+			} else {
+				break
+			}
 		}
 		low, high := parse_id(id)
 		total += sum_invalid_ids(low, high)
