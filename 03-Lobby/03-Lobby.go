@@ -9,36 +9,31 @@ import (
 
 func find_biggest_voltage(bank string) int {
 	biggest_voltage := 0
-	var highest byte = '0'
-	for i := 0; i < len(bank)-1; i++ {
-		if bank[i] > highest {
-			highest = bank[i]
+	for j := 12; j > 0; j-- {
+		var highest byte = '0'
+		for i := 0; i <= len(bank)-j; i++ {
+			if bank[i] > highest {
+				highest = bank[i]
+			}
+		}
+		value, err := strconv.Atoi(string(highest))
+		if err != nil {
+			fmt.Printf("Atoi error = %s\n", err)
+			return (-1)
+		}
+		multiplier := 1
+		for k := j; k > 1; k-- {
+			multiplier *= 10
+		}
+		biggest_voltage += value * multiplier
+		for i := 0; i < len(bank); i++ {
+			if bank[i] == highest {
+				bank = bank[i+1:]
+				break
+			}
 		}
 	}
-	value, err := strconv.Atoi(string(highest))
-	if err != nil {
-		fmt.Printf("Atoi error = %s\n", err)
-		return (-1)
-	}
-	biggest_voltage += value * 10
-	for i := 0; i < len(bank); i++ {
-		if bank[i] == highest {
-			bank = bank[i+1:]
-			break
-		}
-	}
-	highest = '0'
-	for i := 0; i < len(bank); i++ {
-		if bank[i] > highest {
-			highest = bank[i]
-		}
-	}
-	value, err = strconv.Atoi(string(highest))
-	if err != nil {
-		fmt.Printf("Atoi error = %s\n", err)
-		return (-1)
-	}
-	biggest_voltage += value
+	// fmt.Printf("biggest_voltage = %d\n", biggest_voltage)
 	return biggest_voltage
 }
 
